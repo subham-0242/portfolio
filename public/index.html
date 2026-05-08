@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personal Portfolio</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>My Portfolio</h1>
+      <p>Full-stack developer building robust web applications.</p>
+    </header>
+
+    <main>
+      <section>
+        <h2>Skills</h2>
+        <ul class="skills-list">
+          <li>HTML, CSS, JavaScript</li>
+          <li>Node.js, Express.js</li>
+          <li>MongoDB</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Projects</h2>
+        <form id="project-form">
+          <input id="title" placeholder="Project title" required />
+          <textarea id="description" placeholder="Project description" required></textarea>
+          <input id="skills" placeholder="Skills (comma separated)" />
+          <input id="link" placeholder="Project link" />
+          <button type="submit">Add Project</button>
+        </form>
+        <p id="projects-message" class="message" role="status" aria-live="polite"></p>
+        <div id="projects"></div>
+      </section>
+    </main>
+
+    <script src="/script.js"></script>
+  </body>
+</html>
