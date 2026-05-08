@@ -10,7 +10,7 @@ function shouldUseMemoryStore() {
 
 async function listProjects() {
   if (shouldUseMemoryStore()) {
-    return [...inMemoryProjects].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    return [...inMemoryProjects];
   }
 
   return Project.find().sort({ createdAt: -1 }).lean();
@@ -24,7 +24,7 @@ async function createProject(data) {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    inMemoryProjects.push(project);
+    inMemoryProjects.unshift(project);
     return project;
   }
 

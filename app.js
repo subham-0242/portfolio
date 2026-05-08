@@ -21,10 +21,14 @@ app.post('/api/projects', async (req, res) => {
     return res.status(400).json({ error: 'title and description are required' });
   }
 
+  if (!Array.isArray(skills) || skills.some((skill) => typeof skill !== 'string')) {
+    return res.status(400).json({ error: 'skills must be an array of strings' });
+  }
+
   const project = await projectStore.createProject({
     title,
     description,
-    skills: Array.isArray(skills) ? skills : [],
+    skills: skills.map((skill) => skill.trim()).filter(Boolean),
     link,
   });
 
@@ -32,7 +36,9 @@ app.post('/api/projects', async (req, res) => {
 });
 
 app.use((err, _req, res, _next) => {
-  res.status(500).json({ error: err.message || 'Internal server error' });
+  // eslint-disable-next-line no-console
+  console.error(err);
+  res.status(500).json({ error: 'Internal server error' });
 });
 
 module.exports = app;

@@ -1,32 +1,60 @@
 const projectsContainer = document.getElementById('projects');
 const projectForm = document.getElementById('project-form');
+const projectsMessage = document.getElementById('projects-message');
+
+function setMessage(text, isError = false) {
+  projectsMessage.textContent = text;
+  projectsMessage.className = isError ? 'message error' : 'message';
+}
 
 function createProjectCard(project) {
   const card = document.createElement('article');
   card.className = 'project-card';
 
-  const skills = (project.skills || []).length
-    ? `<p><strong>Skills:</strong> ${project.skills.join(', ')}</p>`
-    : '';
-  const link = project.link ? `<p><a href="${project.link}" target="_blank" rel="noreferrer">View project</a></p>` : '';
+  const title = document.createElement('h3');
+  title.textContent = project.title;
+  card.appendChild(title);
 
-  card.innerHTML = `
-    <h3>${project.title}</h3>
-    <p>${project.description}</p>
-    ${skills}
-    ${link}
-  `;
+  const description = document.createElement('p');
+  description.textContent = project.description;
+  card.appendChild(description);
+
+  if ((project.skills || []).length) {
+    const skills = document.createElement('p');
+    skills.textContent = `Skills: ${project.skills.join(', ')}`;
+    card.appendChild(skills);
+  }
+
+  if (project.link) {
+    const linkWrap = document.createElement('p');
+    const link = document.createElement('a');
+    link.href = project.link;
+    link.target = '_blank';
+    link.rel = 'noreferrer';
+    link.textContent = 'View project';
+    linkWrap.appendChild(link);
+    card.appendChild(linkWrap);
+  }
 
   return card;
 }
 
 async function loadProjects() {
-  const response = await fetch('/api/projects');
-  const projects = await response.json();
-  projectsContainer.innerHTML = '';
-  projects.forEach((project) => {
-    projectsContainer.appendChild(createProjectCard(project));
-  });
+  try {
+    const response = await fetch('/api/projects');
+    if (!response.ok) {
+      throw new Error('Unable to load projects');
+    }
+
+    const projects = await response.json();
+    projectsContainer.innerHTML = '';
+    projects.forEach((project) => {
+      projectsContainer.appendChild(createProjectCard(project));
+    });
+    setMessage('');
+  } catch (_error) {
+    setMessage('Unable to load projects. Please try again.', true);
+  }
 }
 
 projectForm.addEventListener('submit', async (event) => {
@@ -43,15 +71,23 @@ projectForm.addEventListener('submit', async (event) => {
     link: document.getElementById('link').value.trim(),
   };
 
-  const response = await fetch('/api/projects', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
+  try {
+    const response = await fetch('/api/projects', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
 
-  if (response.ok) {
+    if (!response.ok) {
+      const details = await response.json().catch(() => ({}));
+      throw new Error(details.error || 'Failed to add project');
+    }
+
     projectForm.reset();
+    setMessage('Project added successfully.');
     await loadProjects();
+  } catch (error) {
+    setMessage(error.message || 'Unable to add project.', true);
   }
 });
 

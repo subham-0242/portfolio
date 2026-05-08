@@ -41,6 +41,16 @@ button {
   padding: 0.5rem;
 }
 
+.message {
+  min-height: 1.25rem;
+  margin: 0.25rem 0 0.75rem;
+  color: #0f766e;
+}
+
+.message.error {
+  color: #b91c1c;
+}
+
 .project-card {
   border: 1px solid #e5e7eb;
   border-radius: 8px;

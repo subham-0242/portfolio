@@ -36,4 +36,15 @@ describe('Projects API', () => {
 
     expect(response.status).toBe(400);
   });
+
+  it('rejects non-string skills entries', async () => {
+    const response = await request(app).post('/api/projects').send({
+      title: 'Invalid skills',
+      description: 'Bad data',
+      skills: ['Node.js', 42],
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('skills must be an array of strings');
+  });
 });
